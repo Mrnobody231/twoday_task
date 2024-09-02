@@ -1,10 +1,9 @@
-import time
 from pages.ClothesCategory import ClothesCategory
 from pages.MainPage import MainPage
 from pages.ShippingAddress import ShippingAddress
 
 
-def test_count_men_clothes(chrome):
+def test_men_clothes(chrome):
     main_page = MainPage(chrome)
     category = ClothesCategory(chrome)
     shipping = ShippingAddress(chrome)
@@ -15,7 +14,7 @@ def test_count_men_clothes(chrome):
     count = category.show_per_page(12, '12')
     product = category.men_product_item_list(2)
     assert count == product
-    category.click_on_item("//div[@class='product details product-item-details']/*/*"
+    category.click_on_item(2, "//div[@class='product details product-item-details']/*/*"
                            "[contains(text(), 'Frankie Sweatshirt')]")
     category.select_size(3, "(//div[@aria-describedby='option-label-size-143'])[2]")
     category.select_color(3, "(//div[@aria-describedby='option-label-color-93'])[1]")
@@ -29,7 +28,7 @@ def test_count_men_clothes(chrome):
     item_quantity_is_the_same = category.get_attribute("//div[@class='details-qty qty']/*[@data-item-qty='2']",
                                                        "data-item-qty")
     assert item_quantity_is_the_same == "2"
-    category.click_on_item("//div[@class='product options']")
+    category.click_on_item(2,"//div[@class='product options']")
     item_size_is_the_same = category.cart_counter(4,
                                              "S",
                                              "//dl[@class='product options list']/*/*[contains(text(), 'S')]")
@@ -38,7 +37,7 @@ def test_count_men_clothes(chrome):
                                             "Green",
                                             "//dl[@class='product options list']/*/*[contains(text(), 'Green')]")
     assert item_color_is_the_same == "Green"
-    category.button_proceed_to_checkout("top-cart-btn-checkout")
+    category.button_proceed_to_checkout(2, "top-cart-btn-checkout")
     shipping.insert_data(4,"(//input[@id='customer-email'])[1]", "jk@gmail.com")
     shipping.insert_data(4,"//input[@name='firstname']", "John")
     shipping.insert_data(4,"//input[@name='lastname']", "Travolta")
@@ -46,30 +45,22 @@ def test_count_men_clothes(chrome):
     shipping.insert_data(4,"//input[@name='street[0]']", "Giedraiciu-3")
     shipping.find_element_with_action(4,"//input[@name='city']")
     shipping.insert_data(2, "//input[@name='city']", "Vilnius")
-    time.sleep(5)
     shipping.find_element_with_action(4, "//input[@name='postcode']")
     shipping.insert_data(2, "//input[@name='postcode']", 123456)
     shipping.find_element_with_action(4, "//input[@name='telephone']")
     shipping.insert_data(2, "//input[@name='telephone']", 1234567)
-    shipping.scroll_to_element(4, "//select[@name='region_id']", "Alaska")
-    time.sleep(3)
     shipping.scroll_to_element(4, "//select[@name='country_id']", "Lithuania")
+    shipping.scroll_to_element(4, "//select[@name='region_id']", "Vilniaus Apskritis")
     shipping.find_element_with_action(4, "(//input[@class='radio'])[2]")
-    category.click_on_item("(//input[@class='radio'])[2]")
-    time.sleep(5)
+    category.click_on_item(2,"(//input[@class='radio'])[2]")
+    category.click_on_item(2,"//button[@class='button action continue primary']")
+    if shipping.wait(8, "//div[@class='opc-block-summary']"):
+        category.click_on_item(4,"//button[@class='action primary checkout']")
 
-    category.click_on_item("//button[@class='button action continue primary']")
-    time.sleep(5)
-
-    category.click_on_item("//button[@class='action primary checkout']")
-    time.sleep(5)
-
-
-
-
-def test_count_women_cart(chrome):
+def test_women_clothes(chrome):
     main_page = MainPage(chrome)
     category = ClothesCategory(chrome)
+    shipping = ShippingAddress(chrome)
     main_page.hide_sticky_box("ea-stickybox-hide")
     main_page.select_from_menu(main_page.women_menu_locator("ui-id-4"),
                                main_page.women_bottoms_locator("ui-id-10"),
@@ -80,7 +71,7 @@ def test_count_women_cart(chrome):
     category.select_size(3,"(//div[@id='option-label-size-143-item-171'])[1]")
     category.select_color(3,"(//div[@id='option-label-color-93-item-49'])[1]")
     category.button_add_to_cart("(//button[@class='action tocart primary'])[1]")
-    first_item = category.cart_counter(4,
+    first_item = category.cart_counter(6,
                                        "1",
                                        "//a[@class='action showcart']/*/*[@class='counter-number']")
     assert first_item == "1"
@@ -88,7 +79,7 @@ def test_count_women_cart(chrome):
     category.select_size(4,"(//div[@id='option-label-size-143-item-171'])[3]")
     category.select_color(4,"(//div[@id='option-label-color-93-item-57'])[1]")
     category.button_add_to_cart("(//button[@class='action tocart primary'])[3]")
-    second_item = category.cart_counter(4,
+    second_item = category.cart_counter(6,
                                         "2",
                                         "//a[@class='action showcart']/*/*[@class='counter-number']")
     assert second_item == "2"
@@ -96,15 +87,29 @@ def test_count_women_cart(chrome):
     category.select_size(4, "(//div[@id='option-label-size-143-item-171'])[6]")
     category.select_color(4, "(//div[@id='option-label-color-93-item-49'])[4]")
     category.button_add_to_cart("(//button[@class='action tocart primary'])[6]")
-    third_item = category.cart_counter(4,
+    third_item = category.cart_counter(6,
                                        "3",
                                        "//a[@class='action showcart']/*/*[@class='counter-number']")
     assert third_item == "3"
     category.click_on_cart("minicart-wrapper")
     category.remove_from_cart("(//a[@title='Remove item'])[3]")
-    category.click_pop_up('.action-primary.action-accept')
-    after_one_remove = category.cart_counter(4,
-                                         "2",
-                                         "//a[@class='action showcart active']/*/*[@class='counter-number']")
-    assert after_one_remove == "2"
-    category.button_proceed_to_checkout("top-cart-btn-checkout")
+    category.click_pop_up(4,'.action-primary.action-accept')
+    category.button_proceed_to_checkout(4, "top-cart-btn-checkout")
+    shipping.insert_data(4, "(//input[@id='customer-email'])[1]", "jk@gmail.com")
+    shipping.insert_data(4, "//input[@name='firstname']", "John")
+    shipping.insert_data(4, "//input[@name='lastname']", "Travolta")
+    shipping.insert_data(4, "//input[@name='company']", "twoday")
+    shipping.insert_data(4, "//input[@name='street[0]']", "Giedraiciu-3")
+    shipping.find_element_with_action(4, "//input[@name='city']")
+    shipping.insert_data(2, "//input[@name='city']", "Vilnius")
+    shipping.find_element_with_action(4, "//input[@name='postcode']")
+    shipping.insert_data(2, "//input[@name='postcode']", 123456)
+    shipping.find_element_with_action(4, "//input[@name='telephone']")
+    shipping.insert_data(2, "//input[@name='telephone']", 1234567)
+    shipping.scroll_to_element(4, "//select[@name='country_id']", "Lithuania")
+    shipping.scroll_to_element(4, "//select[@name='region_id']", "Vilniaus Apskritis")
+    shipping.find_element_with_action(4, "(//input[@class='radio'])[2]")
+    category.click_on_item(2, "(//input[@class='radio'])[2]")
+    category.click_on_item(2, "//button[@class='button action continue primary']")
+    if shipping.wait(8, "//div[@class='opc-block-summary']"):
+        category.click_on_item(4, "//button[@class='action primary checkout']")

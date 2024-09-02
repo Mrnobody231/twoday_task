@@ -23,8 +23,8 @@ class ClothesCategory:
             By.XPATH, f"(//select[@id='limiter']/*[@value={select_per_page}])[2]").text
         return text
 
-    def click_on_item(self, value: str):
-        self.chrome.find_element(By.XPATH, value).click()
+    def click_on_item(self, time_out: int,  value: str):
+        WebDriverWait(self.chrome, time_out).until(EC.element_to_be_clickable((By.XPATH, value))).click()
 
     def add_quantity(self, value: str, send_keys: str):
         self.chrome.find_element(By.ID, value).clear()
@@ -60,8 +60,9 @@ class ClothesCategory:
     def click_on_cart(self, value: str):
         self.chrome.find_element(By.CLASS_NAME, value).click()
 
-    def click_pop_up(self, value: str):
+    def click_pop_up(self, time_out: int, value: str):
+        WebDriverWait(self.chrome, time_out).until(EC.element_to_be_clickable((By.CSS_SELECTOR, value))).click()
         self.chrome.find_element(By.CSS_SELECTOR, value).click()
 
-    def button_proceed_to_checkout(self, value: str):
-        self.chrome.find_element(By.ID, value).click()
+    def button_proceed_to_checkout(self, time_out: int, value: str):
+        WebDriverWait(self.chrome, time_out).until(EC.element_to_be_clickable((By.ID, value))).click()
